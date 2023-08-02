@@ -138,10 +138,15 @@ volumes:
     with open("docker-compose.yml", "w") as docker_compose_file:
         docker_compose_file.write(docker_compose_content)
 
-    # Starting the Docker containers
+    # Starting the Docker containers 
     try:
         subprocess.run(["docker-compose", "up", "-d"], check=True)
+        print("LEMP Stack in docker for WordPress")
         print(f"Servers for '{site_name}' have been created successfully.")
+        
+        # Prompt User to open site in Browser
+        print(f"Site is up and healthy. Open '{site_name}' in any browser to view it.")
+        print("Or click on the link -> http://localhost:8000")
     except subprocess.CalledProcessError as e:
         print("Error:", e)
         sys.exit(1)
