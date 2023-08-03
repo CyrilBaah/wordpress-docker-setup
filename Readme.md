@@ -11,22 +11,22 @@ This Python script automates the setup of a WordPress site using Docker with a L
 
 1. Clone this repository:
 ```sh
- $ git clone https://github.com/your-username/wordpress-docker-setup.git
- $ cd wordpress-docker-setup
+  git clone https://github.com/your-username/wordpress-docker-setup.git
+  cd wordpress-docker-setup
 ```
 2. Create new WordPress site:
 ```sh
- $ python3 create_wordpress_site.py <site_name>
+  python3 create_wordpress_site.py <site_name>
 ```
 3. Disable site:
 ```sh
- $ python3 create_wordpress_site.py <site_name> disable
+  python3 create_wordpress_site.py <site_name> disable
 ```
 4. Enable site:
 ```sh
- $ python3 create_wordpress_site.py <site_name> enable
+  python3 create_wordpress_site.py <site_name> enable
 ```
 4. Delete site:
 ```sh
- $ python3 create_wordpress_site.py <site_name> delete
+  python3 create_wordpress_site.py <site_name> delete
 ```
