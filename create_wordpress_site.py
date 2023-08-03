@@ -150,19 +150,45 @@ volumes:
     except subprocess.CalledProcessError as e:
         print("Error:", e)
         sys.exit(1)
+        
+def enable_wordpress_site(site_name):
+    try:
+        subprocess.run(["docker-compose", "start"], check=True)
+        print(f"WordPress site '{site_name}' has been enabled (containers started).")
+    except subprocess.CalledProcessError as e:
+        print("Error:", e)
+        sys.exit(1)
+
+def disable_wordpress_site(site_name):
+    try:
+        subprocess.run(["docker-compose", "stop"], check=True)
+        print(f"WordPress site '{site_name}' has been disabled (containers stopped).")
+    except subprocess.CalledProcessError as e:
+        print("Error:", e)
+        sys.exit(1)
 
 def main():
     if not check_installed("docker-compose"):
         print("Docker Compose is not installed. Please make sure Docker Compose is installed and in the system PATH.")
         sys.exit(1)
 
-    if len(sys.argv) != 2:
-        print("Usage: ./create_wordpress_site.py <site_name>")
+    if len(sys.argv) < 2:
+        print("Usage: ./create_wordpress_site.py <site_name> [enable|disable]")
         sys.exit(1)
 
     site_name = sys.argv[1]
     modify_hosts_entry(site_name)
     create_wordpress_site(site_name)
+
+    if len(sys.argv) == 3:
+        subcommand = sys.argv[2]
+        if subcommand == "enable":
+            enable_wordpress_site(site_name)
+        elif subcommand == "disable":
+            disable_wordpress_site(site_name)
+        else:
+            print(f"Unknown subcommand '{subcommand}'. Please use 'enable' or 'disable'.")
+            sys.exit(1)
 
 if __name__ == "__main__":
     main()
