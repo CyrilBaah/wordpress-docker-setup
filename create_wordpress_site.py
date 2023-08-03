@@ -2,6 +2,7 @@
 import os
 import subprocess
 import sys
+import shutil 
 
 def check_installed(command):
     try:
@@ -167,6 +168,27 @@ def disable_wordpress_site(site_name):
         print("Error:", e)
         sys.exit(1)
 
+def delete_wordpress_site(site_name):
+    # Verify if "wordpress-docker" directory exists
+    if not os.path.exists("wordpress-docker"):
+        print(f"Site '{site_name}' does not exist.")
+        return
+    
+    # Implement the action to delete the site (containers and local files)
+    subprocess.run(["docker-compose", "down", "-v"], check=True)
+    print(f"Site '{site_name}' has been deleted.")
+    
+    # Remove the entry from /etc/hosts
+    with open("/etc/hosts", "r") as hosts_file:
+        lines = hosts_file.readlines()
+    with open("/etc/hosts", "w") as hosts_file:
+        for line in lines:
+            if not line.startswith(f"127.0.0.1 {site_name}"):
+                hosts_file.write(line)
+                
+    # Remove local files
+    shutil.rmtree("wordpress-docker")
+    
 def main():
     if not check_installed("docker-compose"):
         print("Docker Compose is not installed. Please make sure Docker Compose is installed and in the system PATH.")
@@ -186,6 +208,8 @@ def main():
             enable_wordpress_site(site_name)
         elif subcommand == "disable":
             disable_wordpress_site(site_name)
+        elif subcommand == "delete":
+            delete_wordpress_site(site_name)
         else:
             print(f"Unknown subcommand '{subcommand}'. Please use 'enable' or 'disable'.")
             sys.exit(1)
