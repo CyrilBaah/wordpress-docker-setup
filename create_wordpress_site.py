@@ -154,7 +154,9 @@ volumes:
         
 def enable_wordpress_site(site_name):
     try:
+        os.chdir("wordpress-docker")
         subprocess.run(["docker-compose", "start"], check=True)
+        os.chdir("..")
         print(f"WordPress site '{site_name}' has been enabled (containers started).")
     except subprocess.CalledProcessError as e:
         print("Error:", e)
@@ -162,7 +164,9 @@ def enable_wordpress_site(site_name):
 
 def disable_wordpress_site(site_name):
     try:
+        os.chdir("wordpress-docker")
         subprocess.run(["docker-compose", "stop"], check=True)
+        os.chdir("..")
         print(f"WordPress site '{site_name}' has been disabled (containers stopped).")
     except subprocess.CalledProcessError as e:
         print("Error:", e)
@@ -175,7 +179,9 @@ def delete_wordpress_site(site_name):
         return
     
     # Implement the action to delete the site (containers and local files)
+    os.chdir("wordpress-docker")
     subprocess.run(["docker-compose", "down", "-v"], check=True)
+    os.chdir("..")
     print(f"Site '{site_name}' has been deleted.")
     
     # Remove the entry from /etc/hosts
@@ -195,23 +201,32 @@ def main():
         sys.exit(1)
 
     if len(sys.argv) < 2:
-        print("Usage: ./create_wordpress_site.py <site_name> [enable|disable]")
+        print("Usage: ./create_wordpress_site.py <site_name> [enable|disable|delete]")
         sys.exit(1)
 
     site_name = sys.argv[1]
-    modify_hosts_entry(site_name)
-    create_wordpress_site(site_name)
 
-    if len(sys.argv) == 3:
+    if len(sys.argv) == 2:
+        # Create WordPress site if no subcommand is provided
+        modify_hosts_entry(site_name)
+        create_wordpress_site(site_name)
+        print(f"Site '{site_name}' has been created successfully.")
+        print(f"Site is up and healthy. Open '{site_name}' in any browser to view it.")
+        print("Or click on the link -> http://localhost:8000")
+    else:
+        # If subcommand is provided, enable, disable, or delete the WordPress site
         subcommand = sys.argv[2]
         if subcommand == "enable":
             enable_wordpress_site(site_name)
+            print(f"Site '{site_name}' has been enabled.")
         elif subcommand == "disable":
             disable_wordpress_site(site_name)
+            print(f"Site '{site_name}' has been disabled.")
         elif subcommand == "delete":
             delete_wordpress_site(site_name)
+            print(f"Site '{site_name}' has been deleted.")
         else:
-            print(f"Unknown subcommand '{subcommand}'. Please use 'enable' or 'disable'.")
+            print(f"Unknown subcommand '{subcommand}'. Please use 'enable', 'disable', or 'delete'.")
             sys.exit(1)
 
 if __name__ == "__main__":
