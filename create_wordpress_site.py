@@ -157,7 +157,6 @@ def enable_wordpress_site(site_name):
         os.chdir("wordpress-docker")
         subprocess.run(["docker-compose", "start"], check=True)
         os.chdir("..")
-        print(f"WordPress site '{site_name}' has been enabled (containers started).")
     except subprocess.CalledProcessError as e:
         print("Error:", e)
         sys.exit(1)
@@ -167,7 +166,6 @@ def disable_wordpress_site(site_name):
         os.chdir("wordpress-docker")
         subprocess.run(["docker-compose", "stop"], check=True)
         os.chdir("..")
-        print(f"WordPress site '{site_name}' has been disabled (containers stopped).")
     except subprocess.CalledProcessError as e:
         print("Error:", e)
         sys.exit(1)
@@ -182,7 +180,6 @@ def delete_wordpress_site(site_name):
     os.chdir("wordpress-docker")
     subprocess.run(["docker-compose", "down", "-v"], check=True)
     os.chdir("..")
-    print(f"Site '{site_name}' has been deleted.")
     
     # Remove the entry from /etc/hosts
     with open("/etc/hosts", "r") as hosts_file:
