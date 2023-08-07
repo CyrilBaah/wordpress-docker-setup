@@ -12,6 +12,17 @@ def check_installed(command):
         return False
     except subprocess.CalledProcessError:
         return False
+      
+def install_docker():
+    try:
+        subprocess.run(["sudo", "apt-get", "update"], check=True)
+        subprocess.run(["sudo", "apt-get", "install", "docker.io", "-y"], check=True)
+        subprocess.run(["sudo", "systemctl", "start", "docker"], check=True)
+        subprocess.run(["sudo", "systemctl", "enable", "docker"], check=True)
+        print("Docker has been installed and started successfully.")
+    except subprocess.CalledProcessError as e:
+        print("Error installing Docker:", e)
+        sys.exit(1)
 
 def modify_hosts_entry(site_name):
     # Modify /etc/hosts entry (This will work inside the container but not on the host)
@@ -195,7 +206,10 @@ def delete_wordpress_site(site_name):
 def main():
     if not check_installed("docker-compose"):
         print("Docker Compose is not installed. Please make sure Docker Compose is installed and in the system PATH.")
-        sys.exit(1)
+        install_docker()  # Install Docker if not installed
+        if not check_installed("docker-compose"):
+            print("Docker Compose installation failed. Exiting.")
+            sys.exit(1)
 
     if len(sys.argv) < 2:
         print("Usage: ./create_wordpress_site.py <site_name> [enable|disable|delete]")
