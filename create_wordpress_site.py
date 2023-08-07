@@ -15,11 +15,11 @@ def check_installed(command):
       
 def install_docker():
     try:
-        subprocess.run(["sudo", "apt-get", "update"], check=True)
-        subprocess.run(["sudo", "apt-get", "install", "docker.io", "-y"], check=True)
-        subprocess.run(["sudo", "systemctl", "start", "docker"], check=True)
-        subprocess.run(["sudo", "systemctl", "enable", "docker"], check=True)
-        print("Docker has been installed and started successfully.")
+        subprocess.run(["curl", "-fsSL", "https://get.docker.com", "-o", "get-docker.sh"], check=True)
+        subprocess.run(["sudo", "sh", "get-docker.sh"], check=True)
+        subprocess.run(["sudo", "usermod", "-aG", "docker", os.getlogin()], check=True)
+        os.remove("get-docker.sh")
+        print("Docker has been installed successfully.")
     except subprocess.CalledProcessError as e:
         print("Error installing Docker:", e)
         sys.exit(1)
