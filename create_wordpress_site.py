@@ -12,7 +12,7 @@ def check_installed(command):
         return False
     except subprocess.CalledProcessError:
         return False
-      
+
 def install_docker():
     try:
         subprocess.run(["curl", "-fsSL", "https://get.docker.com", "-o", "get-docker.sh"], check=True)
@@ -22,6 +22,15 @@ def install_docker():
         print("Docker has been installed successfully.")
     except subprocess.CalledProcessError as e:
         print("Error installing Docker:", e)
+        sys.exit(1)
+
+def install_docker_compose():
+    try:
+        subprocess.run(["sudo", "curl", "-fsSL", "https://github.com/docker/compose/releases/latest/download/docker-compose-Linux-x86_64", "-o", "/usr/local/bin/docker-compose"], check=True)
+        subprocess.run(["sudo", "chmod", "+x", "/usr/local/bin/docker-compose"], check=True)
+        print("Docker Compose has been installed successfully.")
+    except subprocess.CalledProcessError as e:
+        print("Error installing Docker Compose:", e)
         sys.exit(1)
 
 def modify_hosts_entry(site_name):
@@ -204,9 +213,14 @@ def delete_wordpress_site(site_name):
     shutil.rmtree("wordpress-docker")
     
 def main():
-    if not check_installed("docker-compose"):
-        print("Docker Compose is not installed. Please make sure Docker Compose is installed and in the system PATH.")
+    if not check_installed("docker"):
         install_docker()  # Install Docker if not installed
+        if not check_installed("docker"):
+            print("Docker installation failed. Exiting.")
+            sys.exit(1)
+
+    if not check_installed("docker-compose"):
+        install_docker_compose()  # Install Docker Compose if not installed
         if not check_installed("docker-compose"):
             print("Docker Compose installation failed. Exiting.")
             sys.exit(1)
